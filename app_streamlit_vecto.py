@@ -102,13 +102,13 @@ if os.path.exists(fichier_collecte):
         type_poubelle = point["type"].lower()
 
         if type_poubelle == "papier" and afficher_papier:
-            icon = folium.Icon(color="blue", icon="book", prefix="fa")
+            icon = folium.Icon(color="blue")
         elif type_poubelle == "recyclage" and afficher_recyclage:
-            icon = folium.Icon(color="beige", icon="recycle", prefix="fa")
+            icon = folium.Icon(color="orange")
         elif type_poubelle == "verre" and afficher_verre:
-            icon = folium.Icon(color="green", icon="glass", prefix="fa")
+            icon = folium.Icon(color="green")
         elif type_poubelle == "ordures" and afficher_om:
-            icon = folium.Icon(color="black", icon="trash", prefix="fa")
+            icon = folium.Icon(color="black")
         else:
             continue
 
