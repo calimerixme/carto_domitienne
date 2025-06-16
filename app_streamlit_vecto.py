@@ -101,7 +101,7 @@ if os.path.exists(fichier_collecte):
     for _, point in df_points.iterrows():
         type_poubelle = point["type"].lower()
 
-        if type_poubelle == "papier" and afficher_papier:
+ if type_poubelle == "papier" and afficher_papier:
     icon = folium.Icon(color="blue", icon="book", prefix="fa")
 elif type_poubelle == "recyclage" and afficher_recyclage:
     icon = folium.Icon(color="orange", icon="recycle", prefix="fa")
