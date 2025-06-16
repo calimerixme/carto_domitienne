@@ -10,7 +10,7 @@ import pandas as pd
 ICON_PATH = os.path.dirname(__file__)
 
 # 📁 Configuration des dossiers
-base_dir = "D:/projet_cartographie"
+base_dir = "."
 os.makedirs(base_dir, exist_ok=True)
 
 # ⚙️ Paramètres OSMnx
@@ -104,22 +104,23 @@ if os.path.exists(fichier_collecte):
     for _, point in df_points.iterrows():
         type_poubelle = point["type"].lower()
 
-        if type_poubelle == "papier" and afficher_papier:
-            icon = folium.CustomIcon(os.path.join(ICON_PATH, "papier.png"), icon_size=(30, 30))
-        elif type_poubelle == "recyclage" and afficher_recyclage:
-            icon = folium.CustomIcon(os.path.join(ICON_PATH, "recyclage.png"), icon_size=(30, 30))
-        elif type_poubelle == "verre" and afficher_verre:
-            icon = folium.CustomIcon(os.path.join(ICON_PATH, "verre.png"), icon_size=(30, 30))
-        elif type_poubelle == "ordures" and afficher_om:
-            icon = folium.CustomIcon(os.path.join(ICON_PATH, "OM.png"), icon_size=(30, 30))
-        else:
-            continue
+        chemin_icon = os.path.join(ICON_PATH, f"{type_poubelle}.png")
+        if type_poubelle in ["papier", "recyclage", "verre", "ordures"] and os.path.exists(chemin_icon):
+            afficher = (
+                (type_poubelle == "papier" and afficher_papier)
+                or (type_poubelle == "recyclage" and afficher_recyclage)
+                or (type_poubelle == "verre" and afficher_verre)
+                or (type_poubelle == "ordures" and afficher_om)
+            )
+            if not afficher:
+                continue
 
-        folium.Marker(
-            location=[point["lat"], point["lon"]],
-            popup=f'{point["nom"]} ({point["type"]})',
-            icon=icon,
-        ).add_to(m)
+            icon = folium.CustomIcon(chemin_icon, icon_size=(30, 30))
+            folium.Marker(
+                location=[point["lat"], point["lon"]],
+                popup=f'{point["nom"]} ({point["type"]})',
+                icon=icon,
+            ).add_to(m)
 
 # 📂 Export HTML et GeoJSON
 export_html = os.path.join(base_dir, "carte_export.html")
