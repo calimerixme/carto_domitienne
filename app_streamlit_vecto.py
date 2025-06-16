@@ -6,6 +6,9 @@ from rapidfuzz import process
 from streamlit_folium import st_folium
 import pandas as pd
 
+# 📁 IMPORTANT : pour que les icônes soient trouvées sur le cloud
+ICON_PATH = os.path.dirname(__file__)
+
 # 📁 Configuration des dossiers
 base_dir = "D:/projet_cartographie"
 os.makedirs(base_dir, exist_ok=True)
@@ -102,13 +105,13 @@ if os.path.exists(fichier_collecte):
         type_poubelle = point["type"].lower()
 
         if type_poubelle == "papier" and afficher_papier:
-            icon = folium.CustomIcon("papier.png", icon_size=(30, 30))
+            icon = folium.CustomIcon(os.path.join(ICON_PATH, "papier.png"), icon_size=(30, 30))
         elif type_poubelle == "recyclage" and afficher_recyclage:
-            icon = folium.CustomIcon("recyclage.png", icon_size=(30, 30))
+            icon = folium.CustomIcon(os.path.join(ICON_PATH, "recyclage.png"), icon_size=(30, 30))
         elif type_poubelle == "verre" and afficher_verre:
-            icon = folium.CustomIcon("verre.png", icon_size=(30, 30))
+            icon = folium.CustomIcon(os.path.join(ICON_PATH, "verre.png"), icon_size=(30, 30))
         elif type_poubelle == "ordures" and afficher_om:
-            icon = folium.CustomIcon("OM.png", icon_size=(30, 30))
+            icon = folium.CustomIcon(os.path.join(ICON_PATH, "OM.png"), icon_size=(30, 30))
         else:
             continue
 
