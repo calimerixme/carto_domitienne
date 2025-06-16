@@ -101,22 +101,22 @@ if os.path.exists(fichier_collecte):
     for _, point in df_points.iterrows():
         type_poubelle = point["type"].lower()
 
- if type_poubelle == "papier" and afficher_papier:
-    icon = folium.Icon(color="blue", icon="book", prefix="fa")
-elif type_poubelle == "recyclage" and afficher_recyclage:
-    icon = folium.Icon(color="orange", icon="recycle", prefix="fa")
-elif type_poubelle == "verre" and afficher_verre:
-    icon = folium.Icon(color="green", icon="glass", prefix="fa")
-elif type_poubelle == "ordures" and afficher_om:
-    icon = folium.Icon(color="black", icon="trash", prefix="fa")
-else:
-    continue
+        if type_poubelle == "papier" and afficher_papier:
+            icon = folium.Icon(color="blue", icon="book", prefix="fa")
+        elif type_poubelle == "recyclage" and afficher_recyclage:
+            icon = folium.Icon(color="orange", icon="recycle", prefix="fa")
+        elif type_poubelle == "verre" and afficher_verre:
+            icon = folium.Icon(color="green", icon="glass", prefix="fa")
+        elif type_poubelle == "ordures" and afficher_om:
+            icon = folium.Icon(color="black", icon="trash", prefix="fa")
+        else:
+            continue
 
-folium.Marker(
-    location=[point["lat"], point["lon"]],
-    popup=f'{point["nom"]} ({point["type"]})',
-    icon=icon,
-).add_to(m)
+        folium.Marker(
+            location=[point["lat"], point["lon"]],
+            popup=f'{point["nom"]} ({point["type"]})',
+            icon=icon,
+        ).add_to(m)
 
 # 📂 Export HTML et GeoJSON
 export_html = os.path.join(base_dir, "carte_export.html")
