@@ -94,6 +94,7 @@ for _, row in edges.iterrows():
     popup = f"<b>{nom_affiche}</b><br>{statut}"
     folium.PolyLine(coords, color=color, weight=weight, popup=folium.Popup(popup)).add_to(m)
 
+# 🗑️ Points de collecte (CSV)
 fichier_collecte = os.path.join(base_dir, "points_collecte.csv")
 if os.path.exists(fichier_collecte):
     df_points = pd.read_csv(fichier_collecte)
