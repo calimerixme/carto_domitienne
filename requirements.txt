@@ -1,0 +1,6 @@
+streamlit
+folium
+osmnx
+pandas
+rapidfuzz
+streamlit-folium
