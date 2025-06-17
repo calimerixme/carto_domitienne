@@ -115,7 +115,7 @@ if os.path.exists(fichier_collecte):
             if not afficher:
                 continue
 
-            icon = folium.CustomIcon(chemin_icon, icon_size=(30, 30))
+            icon = folium.CustomIcon(chemin_icon, icon_size=(20, 20))
             folium.Marker(
                 location=[point["lat"], point["lon"]],
                 popup=f'{point["nom"]} ({point["type"]})',
