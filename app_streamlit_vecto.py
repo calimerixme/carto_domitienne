@@ -76,7 +76,7 @@ def extraire_noms(n):
     return []
 
 # 📍 Création de la carte
-center = ox.geocode("Cazouls-lès-Béziers, France")
+center = [43.3794, 3.0746]  # Coordonnées GPS fixes pour Cazouls-lès-Béziers
 m = folium.Map(location=center, zoom_start=15)
 
 # 📂 Ajout des rues avec couleur
