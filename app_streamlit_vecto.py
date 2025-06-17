@@ -99,28 +99,37 @@ for _, row in edges.iterrows():
 
 # 🗑️ Points de collecte (CSV)
 fichier_collecte = os.path.join(base_dir, "points_collecte.csv")
+icone_size = (20, 20)  # ← ajuste ici la taille des icônes
+
 if os.path.exists(fichier_collecte):
     df_points = pd.read_csv(fichier_collecte)
     for _, point in df_points.iterrows():
-        type_poubelle = point["type"].lower()
+        type_poubelle = point["type"].strip().lower()
 
+        # Vérifie si ce type est à afficher
+        afficher = (
+            (type_poubelle == "papier" and afficher_papier)
+            or (type_poubelle == "recyclage" and afficher_recyclage)
+            or (type_poubelle == "verre" and afficher_verre)
+            or (type_poubelle == "ordures" and afficher_om)
+        )
+        if not afficher:
+            continue
+
+        # Génère le chemin de l’icône
         chemin_icon = os.path.join(ICON_PATH, f"{type_poubelle}.png")
-        if type_poubelle in ["papier", "recyclage", "verre", "ordures"] and os.path.exists(chemin_icon):
-            afficher = (
-                (type_poubelle == "papier" and afficher_papier)
-                or (type_poubelle == "recyclage" and afficher_recyclage)
-                or (type_poubelle == "verre" and afficher_verre)
-                or (type_poubelle == "ordures" and afficher_om)
-            )
-            if not afficher:
-                continue
-
-            icon = folium.CustomIcon(chemin_icon, icon_size=(30, 30))
-            folium.Marker(
-                location=[point["lat"], point["lon"]],
-                popup=f'{point["nom"]} ({point["type"]})',
-                icon=icon,
-            ).add_to(m)
+        if os.path.exists(chemin_icon):
+            try:
+                icon = folium.CustomIcon(chemin_icon, icon_size=icone_size)
+                folium.Marker(
+                    location=[point["lat"], point["lon"]],
+                    popup=f'{point["nom"]} ({point["type"]})',
+                    icon=icon,
+                ).add_to(m)
+            except Exception as e:
+                st.warning(f"❌ Erreur lors du chargement de l'icône '{chemin_icon}' : {e}")
+        else:
+            st.warning(f"⚠️ Icône manquante pour : {type_poubelle} ({chemin_icon})")
 
 # 📂 Export HTML et GeoJSON
 export_html = os.path.join(base_dir, "carte_export.html")
