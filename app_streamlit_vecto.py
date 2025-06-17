@@ -1,3 +1,4 @@
+
 import os
 import folium
 import osmnx as ox
@@ -17,15 +18,9 @@ os.makedirs(base_dir, exist_ok=True)
 ox.settings.cache_folder = os.path.join(base_dir, "osmnx_cache")
 ox.settings.use_cache = True
 
-# 🌍 Chargement d’un fichier local au lieu de la requête réseau (streamlit cloud ne supporte pas bien nominatim)
-import networkx as nx
-chemin_graphml = os.path.join(base_dir, "cazouls.graphml")
-if os.path.exists(chemin_graphml):
-    graph = ox.load_graphml(chemin_graphml)
-else:
-    graph = ox.graph_from_place("Cazouls-lès-Béziers, France", network_type="drive")
-    ox.save_graphml(graph, chemin_graphml)
-
+# 🌍 Lieu à cartographier
+place_name = "Cazouls-lès-Béziers, France"
+graph = ox.graph_from_place(place_name, network_type="drive")
 edges = ox.graph_to_gdfs(graph, nodes=False)
 
 # 🚫 / 🔏️ Rues à statut connu
@@ -76,7 +71,7 @@ def extraire_noms(n):
     return []
 
 # 📍 Création de la carte
-center = [43.3794, 3.0746]  # Coordonnées GPS fixes pour Cazouls-lès-Béziers
+center = ox.geocode(place_name)
 m = folium.Map(location=center, zoom_start=15)
 
 # 📂 Ajout des rues avec couleur
@@ -105,34 +100,28 @@ for _, row in edges.iterrows():
 
 # 🗑️ Points de collecte (CSV)
 fichier_collecte = os.path.join(base_dir, "points_collecte.csv")
-icone_size = (22, 22)
 if os.path.exists(fichier_collecte):
     df_points = pd.read_csv(fichier_collecte)
     for _, point in df_points.iterrows():
-        type_poubelle = point["type"].strip().lower()
-
-        afficher = (
-            (type_poubelle == "papier" and afficher_papier)
-            or (type_poubelle == "recyclage" and afficher_recyclage)
-            or (type_poubelle == "verre" and afficher_verre)
-            or (type_poubelle == "ordures" and afficher_om)
-        )
-        if not afficher:
-            continue
+        type_poubelle = point["type"].lower()
 
         chemin_icon = os.path.join(ICON_PATH, f"{type_poubelle}.png")
-        if os.path.exists(chemin_icon):
-            try:
-                icon = folium.CustomIcon(chemin_icon, icon_size=icone_size)
-                folium.Marker(
-                    location=[point["lat"], point["lon"]],
-                    popup=f'{point["nom"]} ({point["type"]})',
-                    icon=icon,
-                ).add_to(m)
-            except Exception as e:
-                st.warning(f"❌ Erreur chargement icône '{chemin_icon}' : {e}")
-        else:
-            st.warning(f"⚠️ Icône manquante : {type_poubelle} → {chemin_icon}")
+        if type_poubelle in ["papier", "recyclage", "verre", "ordures"] and os.path.exists(chemin_icon):
+            afficher = (
+                (type_poubelle == "papier" and afficher_papier)
+                or (type_poubelle == "recyclage" and afficher_recyclage)
+                or (type_poubelle == "verre" and afficher_verre)
+                or (type_poubelle == "ordures" and afficher_om)
+            )
+            if not afficher:
+                continue
+
+            icon = folium.CustomIcon(chemin_icon, icon_size=(30, 30))
+            folium.Marker(
+                location=[point["lat"], point["lon"]],
+                popup=f'{point["nom"]} ({point["type"]})',
+                icon=icon,
+            ).add_to(m)
 
 # 📂 Export HTML et GeoJSON
 export_html = os.path.join(base_dir, "carte_export.html")
@@ -171,4 +160,5 @@ if st_data and st_data.get("last_clicked"):
                 df_points = new_row
 
             df_points.to_csv(fichier_collecte, index=False)
+            st.success(f"✅ Point « {nom} » ajouté à `points_collecte.csv` !")
             st.success(f"✅ Point « {nom} » ajouté à `points_collecte.csv` !")
